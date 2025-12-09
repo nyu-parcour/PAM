@@ -12,7 +12,7 @@ namespace utils {
   // if the size of a node is smaller than this number then it
   // processed sequentially instead of in parallel
   // constexpr const size_t node_limit = 100;
-  constexpr const size_t node_limit = 1000000;
+  constexpr const size_t node_limit = 100000;
 
   // for two input sizes of n and m, should we do a parallel fork
   // assumes work proportional to m log (n/m + 1)
