@@ -29,6 +29,38 @@ struct gc {
     return false;
   }
 
+  static bool do_parallel_check(node* lsub, node* rsub) {
+    if(Node::size(lsub) < utils::node_limit || Node::size(rsub) < utils::node_limit) {
+      return false;
+    }
+    volatile l_rc = lsub->ref_cnt;
+    volatile r_rc = rsub->ref_cnt;
+    if(l_rc > 1 || r_rc > 1) {
+      return false;
+    }
+
+    node* ll = lsub->lc;
+    node* lr = lsub->rc;
+    node* rl = rsub->lc;
+    node* rr = rsub->rc;
+
+    if(!ll || !lr || !rl || !rr){
+      return false;
+    }
+
+    volatile ll_rc = ll->ref_cnt;
+    volatile lr_rc = lr->ref_cnt;
+    volatile rl_rc = rl->ref_cnt;
+    volatile rr_rc = rr->ref_cnt;
+
+    if(ll_rc > 1 || lr_rc > 1 || rl_rc > 1 || rr_rc > 1){
+      return false;
+    }
+
+    return true;
+
+  }
+
   // atomically decrement ref count and if zero:
   //   delete node and recursively decrement the two children
   static void decrement_recursive(node* t) {
@@ -36,7 +68,7 @@ struct gc {
     node* lsub = t->lc;
     node* rsub = t->rc;
     if (decrement(t)) {
-      utils::fork_no_result(Node::size(lsub) >= utils::node_limit && Node::size(rsub) >= utils::node_limit,
+      utils::fork_no_result(do_parallel_check(lsub, rsub),
          [&]() {decrement_recursive(lsub);},
          [&]() {decrement_recursive(rsub);});
     }
