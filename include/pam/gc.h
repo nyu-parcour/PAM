@@ -36,7 +36,7 @@ struct gc {
     node* lsub = t->lc;
     node* rsub = t->rc;
     if (decrement(t)) {
-      utils::fork_no_result(Node::size(lsub) >= utils::node_limit,
+      utils::fork_no_result(Node::size(lsub) >= utils::node_limit && Node::size(rsub) >= utils::node_limit,
          [&]() {decrement_recursive(lsub);},
          [&]() {decrement_recursive(rsub);});
     }
