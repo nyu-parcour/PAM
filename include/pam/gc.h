@@ -33,8 +33,8 @@ struct gc {
     if(Node::size(lsub) < utils::node_limit || Node::size(rsub) < utils::node_limit) {
       return false;
     }
-    volatile l_rc = lsub->ref_cnt;
-    volatile r_rc = rsub->ref_cnt;
+    volatile node_size_t l_rc = lsub->ref_cnt;
+    volatile node_size_t r_rc = rsub->ref_cnt;
     if(l_rc > 1 || r_rc > 1) {
       return false;
     }
@@ -48,17 +48,15 @@ struct gc {
       return false;
     }
 
-    volatile ll_rc = ll->ref_cnt;
-    volatile lr_rc = lr->ref_cnt;
-    volatile rl_rc = rl->ref_cnt;
-    volatile rr_rc = rr->ref_cnt;
+    volatile node_size_t ll_rc = ll->ref_cnt;
+    volatile node_size_t lr_rc = lr->ref_cnt;
+    volatile node_size_t rl_rc = rl->ref_cnt;
+    volatile node_size_t rr_rc = rr->ref_cnt;
 
     if(ll_rc > 1 || lr_rc > 1 || rl_rc > 1 || rr_rc > 1){
       return false;
     }
-
     return true;
-
   }
 
   // atomically decrement ref count and if zero:
